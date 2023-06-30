@@ -15,11 +15,6 @@ export const Screen = {
     width : Dimensions.get("window").width
 }
 
-export const fontSize = {
-    small : 12,
-    medium : 18.5,
-    large : 25,
-    extraLarge : 30
-}
+
 
 
