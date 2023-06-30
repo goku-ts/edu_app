@@ -11,11 +11,13 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { Icon } from 'react-native-elements';
-import { ScaledSheet } from "react-native-size-matters";
+import { ScaledSheet, scale } from "react-native-size-matters";
 
 import { SigninScreenProps } from "../../navigation/Navigator";
 import { API } from "../../assets/api_urls";
 import { Screen } from "../../assets/assets";
+import Animation from "../../components/Loader";
+import LoadingScreen from "../../components/LoadingScreen";
 
 import {
   FormInput,
@@ -33,6 +35,7 @@ const SignInScreen: React.FC<SigninScreenProps> = ({ navigation, route }) => {
 
   const [message, setMessage] = useState();
   const [submit, isSubmit] = useState(false);
+  const [loader, setLoader] = useState(false)
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -42,6 +45,7 @@ const SignInScreen: React.FC<SigninScreenProps> = ({ navigation, route }) => {
   });
 
   const handleSignIn = (values: typeof initialValues) => {
+    setLoader(true)
     // Perform sign-in logic here
     axios
       .post(API.signin, {
@@ -50,23 +54,23 @@ const SignInScreen: React.FC<SigninScreenProps> = ({ navigation, route }) => {
       })
       .then((response) => {
         setMessage(response?.data.message);
+        if(response?.data.message) setLoader(false)
         if (response?.data?.status === "SUCCESS") {
           navigation.navigate("Profile", { data: response?.data });
+          setLoader(false)
         }
       })
       .catch((e) => console.log(e));
   };
 
- 
+
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.w_container}>
         <View style={styles.bigCircle}></View>
         <View style={styles.smallCircle}></View>
-        {message && (
-          <Text style={[styles.errorText, { fontSize: 12 }]}>{message}</Text>
-        )}
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -79,13 +83,16 @@ const SignInScreen: React.FC<SigninScreenProps> = ({ navigation, route }) => {
                   <View style={styles.logoBox}>
                     <Icon
                       color='#fff'
-                      name='comments'
+                      name='book'
                       type='font-awesome'
-                      size={50}
+                      size={scale(50)}
                     />
                   </View>
                   {/*    LABELS AND INPUTS */}
                   <View style={styles.fieldsandbutton}>
+                    {message && (
+                      <Text style={[styles.errorText, { fontSize: 12 }]}>{message}</Text>
+                    )}
                     <FormInput
                       placeholder="Email"
                       value={values.email}
@@ -124,6 +131,7 @@ const SignInScreen: React.FC<SigninScreenProps> = ({ navigation, route }) => {
                   <TouchableOpacity>
                     <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                   </TouchableOpacity>
+                  <LoadingScreen visible={loader} />
                 </View>
               </View>
             </View>
@@ -137,7 +145,8 @@ const SignInScreen: React.FC<SigninScreenProps> = ({ navigation, route }) => {
 const styles = ScaledSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: "#EF6C33"
   },
   errorText: {
     fontSize: 10,
@@ -172,7 +181,7 @@ const styles = ScaledSheet.create({
   logoBox: {
     width: "100@ms",
     height: "100@ms",
-    backgroundColor: '#eb4d4b',
+    backgroundColor: '#0C4A60',
     borderRadius: 1000,
     alignSelf: 'center',
     display: 'flex',
@@ -193,7 +202,7 @@ const styles = ScaledSheet.create({
     marginTop: 10,
   },
   loginButton: {
-    backgroundColor: '#ff4757',
+    backgroundColor: '#0C4A60',
     marginTop: "5@ms",
     paddingVertical: "5@ms",
     borderRadius: "8@ms",
@@ -218,12 +227,13 @@ const styles = ScaledSheet.create({
   w_container: {
     flex: 1,
     position: 'relative',
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: "#0C4A60"
   },
   bigCircle: {
     width: Dimensions.get('window').height * 0.7,
     height: Dimensions.get('window').height * 0.7,
-    backgroundColor: '#ff6b81',
+    backgroundColor: '#EF6C33',
     borderRadius: 1000,
     position: 'absolute',
     right: Dimensions.get('window').width * 0.25,
@@ -232,7 +242,7 @@ const styles = ScaledSheet.create({
   smallCircle: {
     width: Dimensions.get('window').height * 0.4,
     height: Dimensions.get('window').height * 0.4,
-    backgroundColor: '#ff7979',
+    backgroundColor: '#EF6C33',
     borderRadius: 1000,
     position: 'absolute',
     bottom: Dimensions.get('window').width * -0.2,
