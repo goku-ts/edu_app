@@ -1,9 +1,36 @@
-import { StyleSheet, Text, View } from 'react-native';
-import Wrapper from "../../components/Wrapper"
+import { useEffect } from 'react';
+import { Alert, BackHandler, StyleSheet, Text, View } from 'react-native';
+import Navigator from "../../navigation/Navigator"
+
 
 export const  Profile=() =>{
+
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {text: 'YES', onPress: () => BackHandler.exitApp()},
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+
+
   return(
-     <Wrapper/>
+   <></>
   )
 }
 
